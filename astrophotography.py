@@ -5,6 +5,7 @@ from time import sleep
 # from picamera import PiCamera
 import time
 from pathlib import Path
+import os
 from fractions import Fraction
 from PIL import Image, ImageTk
 is_raspberry_pi = False 
@@ -44,15 +45,15 @@ class App:
         self.vflip_var.set(False)
 
         # icons
-        busy_icon = str(Path.home()) + '/ap/busy.png'
+        busy_icon = str(os.getcwd()) + '/ap/busy.png'
         self.busy_icon = ImageTk.PhotoImage(Image.open(busy_icon),
             Image.ANTIALIAS)
-        idle_icon = str(Path.home()) + '/ap/idle.png'
+        idle_icon = str(os.getcwd()) + '/ap/idle.png'
         self.idle_icon = ImageTk.PhotoImage(Image.open(idle_icon),
             Image.ANTIALIAS)
 
         ### load preview image
-        preview_img =  str(Path.home()) + '/ap/preview.png'
+        preview_img =  str(os.getcwd()) + '/ap/preview.png'
         self.img = ImageTk.PhotoImage(
             Image.open(preview_img).resize(self.preview_resolution),
             Image.ANTIALIAS)
