@@ -1,11 +1,22 @@
+from argparse import ArgumentParser
 from tkinter import *
 from io import BytesIO
 from time import sleep
-from picamera import PiCamera
+# from picamera import PiCamera
 import time
 from pathlib import Path
 from fractions import Fraction
 from PIL import Image, ImageTk
+is_raspberry_pi = False 
+
+parser = ArgumentParser()
+parser.add_argument("--dev", help="Use if not running on a Raspberry Pi.",
+                    action="store_true")
+args= parser.parse_args()
+if not args.dev:
+    from picamera import PiCamera
+    is_raspberry_pi = True
+
 
 class App:
     def __init__(self, master):
