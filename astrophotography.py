@@ -6,7 +6,6 @@ import time
 from pathlib import Path
 from fractions import Fraction
 from PIL import Image, ImageTk
-import webbrowser
 
 class App:
     def __init__(self, master):
