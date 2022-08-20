@@ -176,16 +176,17 @@ class App:
 
     def update_preview_image(self):
         self.update_icon(True)
-        camera = self.setup_camera(self.preview_resolution)
-        camera.capture(self.stream, format='jpeg')
+        if (is_raspberry_pi): 
+            camera = self.setup_camera(self.preview_resolution)
+            camera.capture(self.stream, format='jpeg')
 
-        self.stream.seek(0)
-        self.img = ImageTk.PhotoImage(Image.open(self.stream),
-            Image.ANTIALIAS)
-        self.label.configure(image = self.img)
-        self.photo_ref = self.img
+            self.stream.seek(0)
+            self.img = ImageTk.PhotoImage(Image.open(self.stream),
+                Image.ANTIALIAS)
+            self.label.configure(image = self.img)
+            self.photo_ref = self.img
 
-        camera.close()
+            camera.close()
         self.update_icon(False)
         print("preview updated")
 
@@ -201,72 +202,75 @@ class App:
 
     def save_image(self):
         self.update_icon(True)
-        filename = self.get_filename()
-        camera = self.setup_camera(self.resolution)
-        camera.capture(filename)
+        if (is_raspberry_pi): 
+            filename = self.get_filename()
+            camera = self.setup_camera(self.resolution)
+            camera.capture(filename)
 
-        self.img = ImageTk.PhotoImage(Image.open(filename).resize(
-            self.preview_resolution), Image.ANTIALIAS)
-        self.label.configure(image = self.img)
-        self.photo_ref = self.img
+            self.img = ImageTk.PhotoImage(Image.open(filename).resize(
+                self.preview_resolution), Image.ANTIALIAS)
+            self.label.configure(image = self.img)
+            self.photo_ref = self.img
 
-        camera.close()
+            camera.close()
         self.update_icon(False)
         print("image saved")
 
 
     def save_low_light_image(self):
         self.update_icon(True)
-        filename = self.get_filename()
+        if (is_raspberry_pi): 
+            filename = self.get_filename()
 
-        camera = self.setup_camera(self.resolution)
-        camera.framerate = Fraction(1, 6)
-        camera.sensor_mode = 3
-        camera.shutter_speed = 6000000
-        camera.exposure_mode = 'off'
+            camera = self.setup_camera(self.resolution)
+            camera.framerate = Fraction(1, 6)
+            camera.sensor_mode = 3
+            camera.shutter_speed = 6000000
+            camera.exposure_mode = 'off'
 
-        """camera = PiCamera(
-            resolution = self.resolution,
-            framerate = Fraction(1, 6),
-            sensor_mode = 3)
-        camera.shutter_speed = 6000000
+            """camera = PiCamera(
+                resolution = self.resolution,
+                framerate = Fraction(1, 6),
+                sensor_mode = 3)
+            camera.shutter_speed = 6000000
 
-        camera.iso = self.iso_value
-        camera.vflip = self.vflip_var.get()
-        camera.hflip = self.hflip_var.get()"""
+            camera.iso = self.iso_value
+            camera.vflip = self.vflip_var.get()
+            camera.hflip = self.hflip_var.get()"""
 
-        # setup_camera sleeps 2 seconds, we want 30
-        sleep(28)
+            # setup_camera sleeps 2 seconds, we want 30
+            sleep(28)
 
-        camera.capture(filename)
+            camera.capture(filename)
 
-        self.img = ImageTk.PhotoImage(
-            Image.open(filename).resize(self.preview_resolution),
-            Image.ANTIALIAS)
-        self.label.configure(image = self.img)
-        self.photo_ref = self.img
+            self.img = ImageTk.PhotoImage(
+                Image.open(filename).resize(self.preview_resolution),
+                Image.ANTIALIAS)
+            self.label.configure(image = self.img)
+            self.photo_ref = self.img
 
-        camera.close()
+            camera.close()
         self.update_icon(False)
         print("low light image saved")
 
     def live_preview(self):
         self.update_icon(True)
-        camera = self.setup_camera(self.preview_resolution)
-        self.keep_video_running = True
-        with camera:
-            for foo in camera.capture_continuous(self.stream,
-                    format='jpeg', use_video_port = True):
-                self.img = ImageTk.PhotoImage(
-                    Image.open(self.stream), Image.ANTIALIAS)
-                self.label.configure(image = self.img)
-                self.photo_ref = self.img
-                self.stream.seek(0)
-                self.master.update_idletasks()
-                self.master.update()
-                if self.keep_video_running == False:
-                    break
-        camera.close()
+        if (is_raspberry_pi): 
+            camera = self.setup_camera(self.preview_resolution)
+            self.keep_video_running = True
+            with camera:
+                for foo in camera.capture_continuous(self.stream,
+                        format='jpeg', use_video_port = True):
+                    self.img = ImageTk.PhotoImage(
+                        Image.open(self.stream), Image.ANTIALIAS)
+                    self.label.configure(image = self.img)
+                    self.photo_ref = self.img
+                    self.stream.seek(0)
+                    self.master.update_idletasks()
+                    self.master.update()
+                    if self.keep_video_running == False:
+                        break
+            camera.close()
         self.update_icon(False)
         print("preview stopped")
 
@@ -275,14 +279,15 @@ class App:
 
     def record_video(self):
         self.update_icon(True)
-        camera = self.setup_camera(self.video_resolution)
-        camera.framerate = 25
-        camera.start_recording(self.get_video_filename())
-        camera.wait_recording(1)
-        camera.stop_recording()
+        if (is_raspberry_pi): 
+            camera = self.setup_camera(self.video_resolution)
+            camera.framerate = 25
+            camera.start_recording(self.get_video_filename())
+            camera.wait_recording(1)
+            camera.stop_recording()
 
-        camera.close()
-        self.update_icon(False)
+            camera.close()
+            self.update_icon(False)
         print("video saved")
 
 root = Tk()
