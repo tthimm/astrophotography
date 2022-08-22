@@ -39,10 +39,10 @@ class App:
         config = conf.read_config()
         
         self.stream = BytesIO()
-        self.video_resolution = conf.split_config_entry(config['VideoResolution'])
-        self.resolution = conf.split_config_entry(config['ImageResolution'])
-        self.preview_resolution = conf.split_config_entry(config['PreviewResolution'])
-        self.video_timer = int(config['VideoTimer'])
+        self.video_resolution = config['VideoResolution']
+        self.resolution = config['ImageResolution']
+        self.preview_resolution = config['PreviewResolution']
+        self.video_timer = config['VideoTimer']
         self.iso_value = 100
         self.hflip_var = BooleanVar()
         self.hflip_var.set(False)
