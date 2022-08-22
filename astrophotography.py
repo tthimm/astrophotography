@@ -2,12 +2,13 @@ from argparse import ArgumentParser
 from tkinter import *
 from io import BytesIO
 from time import sleep
-# from picamera import PiCamera
 import time
 from pathlib import Path
 import os
 from fractions import Fraction
 from PIL import Image, ImageTk
+import config as conf
+
 is_raspberry_pi = False 
 
 parser = ArgumentParser()
@@ -34,10 +35,14 @@ class App:
         self.button_ipady = 31
         self.button_ipadx = 25
 
+        # read config file
+        config = conf.read_config()
+        
         self.stream = BytesIO()
-        self.video_resolution = (1920, 1080)
-        self.resolution = (2592, 1944)
-        self.preview_resolution = (800, 600)
+        self.video_resolution = conf.split_config_entry(config['VideoResolution'])
+        self.resolution = conf.split_config_entry(config['ImageResolution'])
+        self.preview_resolution = conf.split_config_entry(config['PreviewResolution'])
+        self.video_timer = int(config['VideoTimer'])
         self.iso_value = 100
         self.hflip_var = BooleanVar()
         self.hflip_var.set(False)
@@ -91,7 +96,7 @@ class App:
         self.save_low_light_image_btn.place(x = 801, y = 301, width = 400, height = 100)
 
         self.record_video_btn = Button(self.frame,
-            text="record video (60s)",
+            text="record video (" + str(self.video_timer) + "s)",
             font=("Arial", 16),
             command = self.record_video)
         self.record_video_btn.place(x = 801, y = 401, width = 400, height = 100)
@@ -283,7 +288,7 @@ class App:
             camera = self.setup_camera(self.video_resolution)
             camera.framerate = 25
             camera.start_recording(self.get_video_filename())
-            camera.wait_recording(1)
+            camera.wait_recording(self.video_timer)
             camera.stop_recording()
 
             camera.close()
