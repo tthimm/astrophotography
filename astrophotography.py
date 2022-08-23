@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 import os
 from fractions import Fraction
+import tkinter
 from PIL import Image, ImageTk
 import config as conf
 
@@ -36,18 +37,20 @@ class App:
         self.button_ipadx = 25
 
         # read config file
-        config = conf.read_config()
-        
+        self.config, self.config_parser = conf.read_config()
         self.stream = BytesIO()
-        self.video_resolution = config['VideoResolution']
-        self.resolution = config['ImageResolution']
-        self.preview_resolution = config['PreviewResolution']
-        self.video_timer = config['VideoTimer']
+        self.video_resolution = self.config['Video']['VideoResolution']
+        self.resolution = self.config['Video']['ImageResolution']
+        self.preview_resolution = self.config['Video']['PreviewResolution']
+        self.video_timer = self.config['Video']['VideoTimer']
         self.iso_value = 100
         self.hflip_var = BooleanVar()
         self.hflip_var.set(False)
         self.vflip_var = BooleanVar()
         self.vflip_var.set(False)
+        self.ftp_host = self.config['FTP']['Host']
+        self.ftp_user = self.config['FTP']['User']
+        self.ftp_password = self.config['FTP']['Password']
 
         # icons
         busy_icon = str(os.getcwd()) + '/ap/busy.png'
@@ -101,11 +104,17 @@ class App:
             command = self.record_video)
         self.record_video_btn.place(x = 801, y = 401, width = 400, height = 100)
 
+        self.settings_btn = Button(self.frame,
+            text = "settings",
+            font=("Arial", 16),
+            command = self.open_settings_window)
+        self.settings_btn.place(x = 801, y = 501, width = 400, height = 100)
+
         self.quit_btn = Button(self.frame,
             text = "quit",
             font=("Arial", 16),
             command = self.frame.quit)
-        self.quit_btn.place(x = 801, y = 501, width = 400, height = 100)
+        self.quit_btn.place(x = 801, y = 601, width = 400, height = 100)
 
         ### options
         self.label_iso = Label(self.frame,
@@ -140,6 +149,84 @@ class App:
 
         self.icon_label = Label(self.frame, image = self.idle_icon)
         self.icon_label.place(x = 1184, y = 716, width = 16, height = 16)
+
+    # open new Window. let user enter config settings.
+    # save, then return to main window
+    def open_settings_window(self):
+        self.settings_window = Toplevel(self.master)
+        self.settings_window.grab_set() # no input in main window
+        self.settings_window.attributes('-topmost', True) # stay on top of main window
+        self.settings_window.title('settings')
+        self.settings_window.geometry('280x255')
+        
+        self.video_label = Label(self.settings_window, text = 'Video resolution', font=("Arial", 10))
+        self.video_label.place(x = 5, y = 5)
+        self.video_resolution_entry = Entry(self.settings_window)
+        self.video_resolution_string = tkinter.StringVar()
+        self.video_resolution_string.set(str(self.video_resolution[0]) + "x" + str(self.video_resolution[1]))
+        self.video_resolution_entry["textvariable"] = self.video_resolution_string
+        self.video_resolution_entry.place(x = 120, y = 5)
+        
+        self.image_label = Label(self.settings_window, text = 'Image resolution', font=("Arial", 10))
+        self.image_label.place(x = 5, y = 35)
+        self.image_resolution_entry = Entry(self.settings_window)
+        self.image_resolution_string = tkinter.StringVar()
+        self.image_resolution_string.set(str(self.resolution[0]) + "x" + str(self.resolution[1]))
+        self.image_resolution_entry["textvariable"] = self.image_resolution_string
+        self.image_resolution_entry.place(x = 120, y = 35)
+
+        self.preview_label = Label(self.settings_window, text = 'Preview resolution', font=("Arial", 10))
+        self.preview_label.place(x = 5, y = 65)
+        self.preview_resolution_entry = Entry(self.settings_window)
+        self.preview_resolution_string = tkinter.StringVar()
+        self.preview_resolution_string.set(str(self.preview_resolution[0]) + "x" + str(self.preview_resolution[1]))
+        self.preview_resolution_entry["textvariable"] = self.preview_resolution_string
+        self.preview_resolution_entry.place(x = 120, y = 65)
+
+        self.video_timer_label = Label(self.settings_window, text = 'Video timer', font=("Arial", 10))
+        self.video_timer_label.place(x = 5, y = 95)
+        self.video_timer_entry = Entry(self.settings_window)
+        self.video_timer_string = tkinter.StringVar()
+        self.video_timer_string.set(str(self.video_timer))
+        self.video_timer_entry["textvariable"] = self.video_timer_string
+        self.video_timer_entry.place(x = 120, y = 95)
+
+        self.ftp_host_label = Label(self.settings_window, text = 'FTP Host', font=("Arial", 10))
+        self.ftp_host_label.place(x = 5, y = 125)
+        self.ftp_host_entry = Entry(self.settings_window)
+        self.ftp_host_string = tkinter.StringVar()
+        self.ftp_host_string.set(self.ftp_host)
+        self.ftp_host_entry["textvariable"] = self.ftp_host_string
+        self.ftp_host_entry.place(x = 120, y = 125)
+        
+        self.ftp_user_label = Label(self.settings_window, text = 'FTP User', font=("Arial", 10))
+        self.ftp_user_label.place(x = 5, y = 155)
+        self.ftp_user_entry = Entry(self.settings_window)
+        self.ftp_user_string = tkinter.StringVar()
+        self.ftp_user_string.set(self.ftp_user)
+        self.ftp_user_entry["textvariable"] = self.ftp_user_string
+        self.ftp_user_entry.place(x = 120, y = 155)
+
+        self.ftp_password_label = Label(self.settings_window, text = 'FTP Password', font=("Arial", 10))
+        self.ftp_password_label.place(x = 5, y = 185)
+        self.ftp_password_entry = Entry(self.settings_window)
+        self.ftp_password_entry = Entry(self.settings_window)
+        self.ftp_password_string = tkinter.StringVar()
+        self.ftp_password_string.set(self.ftp_password)
+        self.ftp_password_entry["textvariable"] = self.ftp_password_string
+        self.ftp_password_entry.place(x = 120, y = 185)
+
+        self.save_settings_btn = Button(self.settings_window,
+            text = "speichern",
+            font=("Arial", 10),
+            command = lambda: conf.save_config(self))
+        self.save_settings_btn.place(x = 5, y = 215, width = 100, height = 30)
+
+        self.close_settings_btn = Button(self.settings_window,
+            text = "schliessen",
+            font=("Arial", 10),
+            command = self.settings_window.destroy)
+        self.close_settings_btn.place(x = 120, y = 215, width = 100, height = 30)
 
     def update_icon(self, busy):
         self.icon_label.configure(
@@ -294,6 +381,7 @@ class App:
             camera.close()
             self.update_icon(False)
         print("video saved")
+        
 
 root = Tk()
 root.geometry("1200x732+0+0")
