@@ -9,6 +9,7 @@ from fractions import Fraction
 import tkinter
 from PIL import Image, ImageTk
 import config as conf
+import ftp_upload as ftp
 
 is_raspberry_pi = False 
 
@@ -71,7 +72,7 @@ class App:
         ### preview picture
         self.label = Label(self.frame, image = self.img)
         self.label.place(x = 0,y = 0)
-        print("loaded")
+        #print("loaded")
 
         ### buttons
         self.update_preview_image_btn = Button(self.frame,
@@ -306,8 +307,10 @@ class App:
 
             camera.close()
         self.update_icon(False)
-        print("image saved")
-
+        # preview upload test
+        filename = str(os.getcwd()) + '/ap/preview.png'
+        ftp.ftp_upload(self, filename)
+        print("image saved")    
 
     def save_low_light_image(self):
         self.update_icon(True)
